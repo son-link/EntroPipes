@@ -14,7 +14,9 @@ H = 6
 initX = 32
 initY = 8
 
-gameState = 0 -- 0: Main screen, 1: playing, 2: the puzzle is resolve, 3: Game Over, 4 show Top score
+limitX = 0
+
+gameState = 0 -- 0: Main screen, 1: playing, 2: the puzzle is resolve, 3: Game Over, 4 show Top score, 5 paused, 6 select grid size
 ifWin = true -- For check if the player complete the puzzle
 
 
@@ -24,17 +26,34 @@ numPuzzle = 1 -- count for change actual puzzle for the next is the actual is re
 puzzle = ''
 
 math.randomseed(os.time())
-timeLimit = 120 -- Time limit (2 minutes)
-timerText = '0:00' -- Text for the timer
+timeLimit = 180 -- Time limit (2 minutes)
+totalTime = 0
 score = 0 -- Score
 totalScore = 0
 scoreText = 'Score:' -- Show the score
 scores = {}
+totalPuzzles = 0
+
+-- Test new score system
+
+defaultScores = {
+	['4x4'] = {1000,800,600,400,200},
+	['6x4'] = {1000,800,600,400,200},
+	['6x6'] = {1000,800,600,400,200},
+	['8x6'] = {1000,800,600,400,200}
+}
+
+require 'table_save'
+scores = table.load('scores2')
+if not scores then
+	table.save(defaultScores, 'scores2')
+	scores = defaultScores
+end
 
  -- the background image
 local bg
 function love.load()
-	-- Window config (only on Love2D)
+	-- Window config (only on Löve)
 	love.window.setMode(320, 240, {resizable=false, centered=true})
 	if love.window.setTitle then
 		-- Not implementd on LövePotion
@@ -46,8 +65,7 @@ function love.load()
 	love.graphics.setFont(font)
 	
 	-- open the file whith the puzzles list
-	appendFileLines('puzzles.txt', puzzles)
-	shuffle(puzzles)
+	
 
 	--preload images for the pipes
 	pipes = {
@@ -74,6 +92,7 @@ function love.load()
 	gameBG = love.graphics.newImage("img/bg.png")
 	win_dialog = love.graphics.newImage("img/win_dialog.png")
 	top_score_bg = love.graphics.newImage("img/top_score_bg.png")
+	gameMode = love.graphics.newImage("img/select_grid_size.png")
 	-- set default background
 	bg = mainBG
 end
@@ -106,34 +125,43 @@ function love.draw()
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("Complete!", 0, 56, 320, 'center')
-		love.graphics.printf("Time: "..math.ceil(timeLimit), 0, 80, 320, 'center')
+		love.graphics.printf("Time: "..math.ceil(timeLimit-30), 0, 80, 320, 'center')
 		love.graphics.printf("Score: "..score, 0, 96, 320, 'center')
-		love.graphics.printf("Press screen\nto continue.", 0, 128, 320, 'center')
+		love.graphics.printf("Press screen", 0, 128, 320, 'center')
+		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 3 then
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("GAME OVER!", 0, 56, 320, 'center')
-		love.graphics.printf("Score: "..totalScore, 0, 96, 320, 'center')
-		love.graphics.printf("Press screen\nto continue.", 0, 128, 320, 'center')
+		love.graphics.printf("Score: "..totalScore, 0, 80, 320, 'center')
+		love.graphics.printf("Resolved: "..totalPuzzles, 0, 96, 320, 'center')
+		love.graphics.printf("Press screen", 0, 128, 320, 'center')
+		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 4 then
 		love.graphics.draw(top_score_bg, 80, 32)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("Top score", 0, 48, 320, 'center')
 		posY = 64
 		-- Show the top 5 scores
+		scores2 = scores[W..'x'..H]
 		for i = 1, 5 do
-			if scores[i] then
-				if scores[i] == totalScore then
-					love.graphics.setColor(48, 98, 48, 255)
-					love.graphics.print(i..". "..scores[i], 120, posY)
-				else
-					love.graphics.setColor(139, 172, 15, 255)
-					love.graphics.print(i..". "..scores[i], 120, posY)
-				end
+			if tonumber(scores2[i]) == totalScore then
+				love.graphics.setColor(48, 98, 48, 255)
+				love.graphics.print(i..". "..scores2[i], 120, posY)
+			else
+				love.graphics.setColor(139, 172, 15, 255)
+				love.graphics.print(i..". "..scores2[i], 120, posY)
 			end
 			posY = posY + 12
 		end
-		love.graphics.printf("Press screen\nto continue.", 0, 136, 320, 'center')
+		love.graphics.printf("Press screen", 0, 136, 320, 'center')
+		love.graphics.printf("to continue.", 0, 152, 320, 'center')
+	elseif gameState == 5 then
+		love.graphics.draw(win_dialog, 80, 40)
+		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.printf("PAUSE", 0, 96, 320, 'center')
+	elseif gameState == 6 then
+		love.graphics.draw(gameMode, 80, 40)
 	else
 		bg = mainBG
 	end
@@ -147,8 +175,8 @@ function genPuzzle()
 	for i = 1, (W*H) do
 		value = string.sub(puzzle,i,i)
 		newPipe[i-1] = {value = value, img = pipes['pipe_'..value],x = posX, y = posY}
-		if posX == 256 then
-			posX = 32
+		if posX == limitX then
+			posX = initX
 			posY = posY + 32
 		else
 			posX = posX + 32
@@ -157,14 +185,76 @@ function genPuzzle()
 	randPipes()
 end
 
+function love.keypressed(key)
+	if key == 'start' or key == "return" then
+		if gameState == 1 then
+			gameState = 5
+		elseif gameState == 5 then
+			gameState = 1
+		end
+	elseif key == "x" or key == "escape" then
+		love.event.quit()
+	end
+
+end
+
 function love.mousepressed(posx, posy, button)
-	print (gameState)
-	if gameState == 0 or gameState == 2 then
+	if gameState == 0 then
+		gameState = 6
+	elseif gameState == 2 then
 		genPuzzle()
 	elseif gameState == 3 then
 		saveScore()
 	elseif gameState == 4 then
+		timeLimit = 180
+		totalTime = 0
+		totalScore = 0
+		totalPuzzles = 0
 		gameState = 0
+	elseif gameState == 6 then
+		puzzles = {}
+		numPuzzle = 1
+		if posx >= 104 and posx <= 144 and posy >= 80 and posy <= 104 then
+			W = 4
+			H = 4
+			initX = 94
+			initY = 40
+			limitX = 190
+			appendFileLines('puzzles/4x4.txt', puzzles)
+			shuffle(puzzles)
+			gameState = 1
+			genPuzzle()
+		elseif posx >= 104 and posx <= 144 and posy >= 120 and posy <= 144 then
+			W = 6
+			H = 4
+			initX = 64
+			initY = 40
+			limitX = 224
+			appendFileLines('puzzles/6x4.txt', puzzles)
+			shuffle(puzzles)
+			gameState = 1
+			genPuzzle()
+		elseif posx >= 176 and posx <= 216 and posy >= 80 and posy <= 104 then
+			W = 6
+			H = 6
+			initX = 64
+			initY = 8
+			limitX = 224
+			appendFileLines('puzzles/6x6.txt', puzzles)
+			shuffle(puzzles)
+			gameState = 1
+			genPuzzle()
+		elseif posx >= 176 and posx <= 216 and posy >= 120 and posy <= 144 then
+			W = 8
+			H = 6
+			initX = 32
+			initY = 8
+			limitX = 256
+			appendFileLines('puzzles/8x6.txt', puzzles)
+			shuffle(puzzles)
+			gameState = 1
+			genPuzzle()
+		end
 	elseif gameState == 1 then
 		-- walk the pipes array and com wath pipe is presed
 		for y = 0, H-1 do
@@ -257,7 +347,6 @@ function randPipes()
 		end
 	end
 	gameState = 1
-	timeLimit = 120
 end
 
 function calculateEntropy()
@@ -275,8 +364,11 @@ function calculateEntropy()
 		end
 	end
 	if entropy == 0 then
-		score = math.floor(timeLimit) * 10
+		score = math.ceil(timeLimit) * 10
 		totalScore = totalScore + score
+		totalTime = totalTime + timeLimit
+		timeLimit = timeLimit + 30
+		totalPuzzles = totalPuzzles + 1
 		if numPuzzle < #puzzles then
 			numPuzzle = numPuzzle + 1
 			gameState = 2
@@ -307,52 +399,21 @@ function appendFileLines(file, t)
 		end
 	else
 		-- LovePotion
-		for line in io.lines('game/'..file) do
+		for line in io.lines(file) do
 			table.insert(t, line)
 		end
 	end
 end
 
 function saveScore()
-	-- save to 5 score
-	if love.filesystem then
-		if love.filesystem.exists('scores.txt') then
-			appendFileLines('scores.txt', scores)
-		end
-	else
-		f=io.open(name,"r")
-		if f~=nil then
-			io.close(f)
-			appendFileLines('scores.txt', scores)
-		end
+	oldScore = scores[W..'x'..H]
+	table.insert(oldScore, totalScore)
+	table.sort(oldScore, function(a,b) return tonumber(a) > tonumber(b) end)
+	newScores = {}
+	for i = 1, 5 do
+		table.insert(newScores, oldScore[i])
 	end
-
-	table.insert(scores, totalScore)
-	table.sort(scores, function(a,b) return tonumber(a) > tonumber(b) end)
+	scores[W..'x'..H] = newScores
+	table.save(scores, 'scores2')
 	gameState = 4
-	if love.filesystem then
-		f, errorstr = love.filesystem.newFile('scores.txt')
-		if errorstr then
-			print('Error on open file: '..errorstr)
-		end
-		f:open('w')
-		for i = 1, 5 do
-			if scores[i] then
-				f:write(scores[i]..'\n')
-			else
-				break
-			end
-		end
-		f:close()
-	else
-		f = io.open('game/scores.txt', 'w')
-		for i = 1, 5 do
-			if scores[i] then
-				f:write(scores[i]..'\n')
-			else
-				break
-			end
-		end
-		f:close()
-	end
 end
