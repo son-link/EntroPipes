@@ -1,5 +1,5 @@
 --[[
-	EntroPipes r1
+	EntroPipes r3-2
 	© 2015 - 2016 Alfonso Saavedra "Son Link"
 	Under the GNU/GPL 3 license
 	http://github.com/son-link/EntroPipes
@@ -26,7 +26,7 @@ numPuzzle = 1 -- count for change actual puzzle for the next is the actual is re
 puzzle = ''
 
 math.randomseed(os.time()) -- Need for randomize
-timeLimit = 180 -- Time limit on start game (2 minutes)
+timeLimit = 120 -- Time limit on start game (2 minutes)
 totalTime = 0
 score = 0
 totalScore = 0
@@ -42,9 +42,10 @@ defaultScores = {
 }
 
 require 'table_save'
-scores = table.load('scores2')
-if not scores then
-	table.save(defaultScores, 'scores2')
+scores = table.load('scores')
+
+if not scores and (love.filesystem.exists and not love.filesystem.exists('scores')) or io.open('scores') == nil then
+	table.save(defaultScores, 'scores')
 	scores = defaultScores
 end
 

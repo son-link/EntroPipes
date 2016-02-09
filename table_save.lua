@@ -103,9 +103,8 @@ do
 			file = file .. "},"..charE
 		end
 		file = file .. "}"
-		if love.filesystem then
-			love.filesystem.write(filename, file)
-		else
+		if not love.filesystem.write(filename, file) then
+		--else
 			f = io.open(filename, 'w')
 			f:write(file)
 			f:close()
@@ -114,9 +113,10 @@ do
 
 	--// The Load Function
 	function table.load( sfile )
+		print(sfile)
 		local ftables
 		local err
-		if love.filesystem then
+		if love.filesystem.load then
 			ftables,err = love.filesystem.load( sfile )
 		else
 			ftables, err = loadfile (sfile)
