@@ -16,3 +16,6 @@
 * Added more puzzles and credits
 * Update README.md
 * Other minor changes
+
+##r3-2:
+* Fix bug on save/load top score
