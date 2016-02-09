@@ -57,6 +57,9 @@ The puzzle editor is write on HTML and Javascript, simply open **editor.html** o
 
 ## Other credits:
 
+**LövePotion:** Licensed under the MIT Open Source License.
+Copyright (c) 2015 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
+
 **PixelOperator:**
 (C) 2009-2015 The Grandoplex Project.
 Made in Al Khobar, Saudi Arabia.
