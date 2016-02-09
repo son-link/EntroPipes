@@ -1,6 +1,6 @@
 --[[
 	EntroPipes r1
-	© 2015 Alfonso Saavedra "Son Link"
+	© 2015 - 2016 Alfonso Saavedra "Son Link"
 	Under the GNU/GPL 3 license
 	http://github.com/son-link/EntroPipes
 	http://son-link.github.io
@@ -21,20 +21,18 @@ ifWin = true -- For check if the player complete the puzzle
 
 
 puzzles = {} -- table whit the puzzles
-newPipe = {} -- This tavle contain the actual puzzle
+newPipe = {} -- This table contain the actual puzzle
 numPuzzle = 1 -- count for change actual puzzle for the next is the actual is resolve
 puzzle = ''
 
-math.randomseed(os.time())
-timeLimit = 180 -- Time limit (2 minutes)
+math.randomseed(os.time()) -- Need for randomize
+timeLimit = 180 -- Time limit on start game (2 minutes)
 totalTime = 0
-score = 0 -- Score
+score = 0
 totalScore = 0
 scoreText = 'Score:' -- Show the score
 scores = {}
 totalPuzzles = 0
-
--- Test new score system
 
 defaultScores = {
 	['4x4'] = {1000,800,600,400,200},
@@ -60,12 +58,9 @@ function love.load()
 		love.window.setTitle("EntroPipes")
 		love.window.setIcon(love.image.newImageData('icon_small.png'))
 	end
-	-- ser font
+	-- set font
 	font = love.graphics.newFont("PixelOperator8.ttf", 12)
-	love.graphics.setFont(font)
-	
-	-- open the file whith the puzzles list
-	
+	love.graphics.setFont(font)	
 
 	--preload images for the pipes
 	pipes = {
@@ -87,7 +82,7 @@ function love.load()
 		['pipe_F'] = love.graphics.newImage("img/F.png")
 	}
 	
-	-- background images and dialogs
+	-- Background image and dialogs
 	mainBG = love.graphics.newImage("img/main_screen.png")
 	gameBG = love.graphics.newImage("img/bg.png")
 	win_dialog = love.graphics.newImage("img/win_dialog.png")
@@ -122,6 +117,7 @@ function love.draw()
 		love.graphics.print("Time: "..math.ceil(timeLimit), 32, 216)
 		love.graphics.print("Score: "..totalScore, 136, 216)
 	elseif gameState == 2 then
+		-- Puzzle complete
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("Complete!", 0, 56, 320, 'center')
@@ -130,6 +126,7 @@ function love.draw()
 		love.graphics.printf("Press screen", 0, 128, 320, 'center')
 		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 3 then
+		-- Time over
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("GAME OVER!", 0, 56, 320, 'center')
@@ -138,11 +135,11 @@ function love.draw()
 		love.graphics.printf("Press screen", 0, 128, 320, 'center')
 		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 4 then
+		-- Show the top 5 scores
 		love.graphics.draw(top_score_bg, 80, 32)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("Top score", 0, 48, 320, 'center')
 		posY = 64
-		-- Show the top 5 scores
 		scores2 = scores[W..'x'..H]
 		for i = 1, 5 do
 			if tonumber(scores2[i]) == totalScore then
@@ -157,10 +154,12 @@ function love.draw()
 		love.graphics.printf("Press screen", 0, 136, 320, 'center')
 		love.graphics.printf("to continue.", 0, 152, 320, 'center')
 	elseif gameState == 5 then
+		-- Game paused
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.printf("PAUSE", 0, 96, 320, 'center')
 	elseif gameState == 6 then
+		-- Select grid size
 		love.graphics.draw(gameMode, 80, 40)
 	else
 		bg = mainBG
@@ -256,7 +255,7 @@ function love.mousepressed(posx, posy, button)
 			genPuzzle()
 		end
 	elseif gameState == 1 then
-		-- walk the pipes array and com wath pipe is presed
+		-- walk the pipes array and check wath pipe is pressed
 		for y = 0, H-1 do
 			for x = 0, W-1 do
 				piece = newPipe[y*W+x]
@@ -392,7 +391,7 @@ end
 
 function appendFileLines(file, t)
 	-- append lines from the file on the indicated table
-	if love.filesystem then
+	if love.filesystem.lines then
 		-- Love
 		for line in love.filesystem.lines(file) do
 			table.insert(t, line)
@@ -406,6 +405,7 @@ function appendFileLines(file, t)
 end
 
 function saveScore()
+	-- Save score
 	oldScore = scores[W..'x'..H]
 	table.insert(oldScore, totalScore)
 	table.sort(oldScore, function(a,b) return tonumber(a) > tonumber(b) end)
