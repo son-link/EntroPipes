@@ -1,4 +1,4 @@
-#EntroPipes CHANGELOG
+# EntroPipes CHANGELOG
 
 ## r1:
 * Firts release
@@ -9,7 +9,7 @@
 * New top score system.
 * New grafics and other changes
 
-##r3:
+## r3:
 * Update LovePotion to the last commits
 * Update PixelOperator8 font 
 * Minor changes on the code (need for run on the last LovePotion)
@@ -17,5 +17,12 @@
 * Update README.md
 * Other minor changes
 
-##r3-2:
+## r3-2:
 * Fix bug on save/load top score
+
+## r4 (Beta 1):
+* Now avaliable for **Android** thanks to the oficial port **[Löve-Android](https://bitbucket.org/MartinFelis/love-android-sdl2)**
+* Added more puzzles (now have a total of 80, 20 for grid size)
+* Remove **Nintendo 3DS** support.
+* Added **Cscreen** for keep aspect ratio on any screen or window resolution, necesary for Android and now you can change the windows size.
+* Clean clode and other minor changes

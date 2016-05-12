@@ -103,24 +103,14 @@ do
 			file = file .. "},"..charE
 		end
 		file = file .. "}"
-		if not love.filesystem.write(filename, file) then
-		--else
-			f = io.open(filename, 'w')
-			f:write(file)
-			f:close()
-		end
+		love.filesystem.write(filename, file)
 	end
 
 	--// The Load Function
 	function table.load( sfile )
-		print(sfile)
 		local ftables
 		local err
-		if love.filesystem.load then
-			ftables,err = love.filesystem.load( sfile )
-		else
-			ftables, err = loadfile (sfile)
-		end
+		ftables,err = love.filesystem.load( sfile )
 		
 		if err then return _,err end
 		local tables = ftables()

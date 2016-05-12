@@ -1,5 +1,5 @@
 --[[
-	EntroPipes r3-2
+	EntroPipes r4
 	© 2015 - 2016 Alfonso Saavedra "Son Link"
 	Under the GNU/GPL 3 license
 	http://github.com/son-link/EntroPipes
@@ -44,21 +44,39 @@ defaultScores = {
 require 'table_save'
 scores = table.load('scores')
 
-if not scores and (love.filesystem.exists and not love.filesystem.exists('scores')) or io.open('scores') == nil then
+local CScreen = require "cscreen"
+local scaleProportion = 1
+local tx = 0
+local ty = 0
+local fsv = 1
+
+if not scores and (love.filesystem.exists and not love.filesystem.exists('scores')) then
 	table.save(defaultScores, 'scores')
 	scores = defaultScores
 end
 
  -- the background image
 local bg
+
 function love.load()
-	-- Window config (only on Löve)
-	love.window.setMode(320, 240, {resizable=false, centered=true})
-	if love.window.setTitle then
-		-- Not implementd on LövePotion
-		love.window.setTitle("EntroPipes")
-		love.window.setIcon(love.image.newImageData('icon_small.png'))
+	windowWidth = 320
+    windowHeight = 240
+	love.window.setMode(windowWidth, windowHeight, {resizable=true, centered=true})
+	love.window.setTitle("EntroPipes")
+	love.window.setIcon(love.image.newImageData('icon_small.png'))
+	CScreen.init(320,240, true)
+	CScreen.setColor(155,188,15,255)
+	
+	-- Filter for scale
+	love.graphics.setDefaultFilter('nearest', 'nearest')
+	
+	-- Change the scale game on Android
+	if love.system.getOS() == "Android" then
+		local x,y = love.graphics.getDimensions()
+		love.window.setMode(x, y)
+		love.resize(x,y)
 	end
+    
 	-- set font
 	font = love.graphics.newFont("PixelOperator8.ttf", 12)
 	love.graphics.setFont(font)	
@@ -89,6 +107,8 @@ function love.load()
 	win_dialog = love.graphics.newImage("img/win_dialog.png")
 	top_score_bg = love.graphics.newImage("img/top_score_bg.png")
 	gameMode = love.graphics.newImage("img/select_grid_size.png")
+	pause_button = love.graphics.newImage("img/pause_button.png")
+	
 	-- set default background
 	bg = mainBG
 end
@@ -101,16 +121,19 @@ function love.update(dt)
 end
 
 function love.draw()
+	CScreen.apply()
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(bg, 0, 0)
 	if gameState == 1 then
 		bg = gameBG
+		CScreen.setColor(15,56,15,255)
 		-- print the pipes
 		for y = 0, H -1 do
 			for x = 0, W -1 do
 				piece = newPipe[y*W+x]
 				img = pipes['pipe_'..piece.value]
 				love.graphics.draw(img, piece.x, piece.y)
+
 			end
 		end
 		
@@ -158,13 +181,19 @@ function love.draw()
 		-- Game paused
 		love.graphics.draw(win_dialog, 80, 40)
 		love.graphics.setColor(139, 172, 15, 255)
-		love.graphics.printf("PAUSE", 0, 96, 320, 'center')
+		love.graphics.printf("PAUSE", 0, 56, 320, 'center')
+		love.graphics.draw(pause_button, 104, 80)
+		love.graphics.printf("Continue", 0, 88, 320, 'center')
+		love.graphics.draw(pause_button, 104, 120)
+		love.graphics.printf("Exit", 0, 128, 320, 'center')
 	elseif gameState == 6 then
 		-- Select grid size
 		love.graphics.draw(gameMode, 80, 40)
 	else
+		CScreen.setColor(155,188,15,255)
 		bg = mainBG
 	end
+	CScreen.cease()
 end
 
 function genPuzzle()
@@ -186,16 +215,13 @@ function genPuzzle()
 end
 
 function love.keypressed(key)
-	if key == 'start' or key == "return" then
+	if key == "escape" then
 		if gameState == 1 then
 			gameState = 5
-		elseif gameState == 5 then
-			gameState = 1
+		elseif gameState > 3 then
+			love.event.quit()
 		end
-	elseif key == "x" or key == "escape" then
-		love.event.quit()
 	end
-
 end
 
 function love.mousepressed(posx, posy, button)
@@ -211,10 +237,17 @@ function love.mousepressed(posx, posy, button)
 		totalScore = 0
 		totalPuzzles = 0
 		gameState = 0
+		
+	elseif gameState == 5 then
+		if posx >= calcx(104) and posx <= calcx(216) and posy >= calcy(80) and posy <= calcy(104) then
+			gameState = 1
+		elseif posx >= calcx(104) and posx <= calcx(216) and posy >= calcy(120) and posy <= calcy(144) then
+			love.event.quit()
+		end
 	elseif gameState == 6 then
 		puzzles = {}
 		numPuzzle = 1
-		if posx >= 104 and posx <= 144 and posy >= 80 and posy <= 104 then
+		if posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(80) and posy <= calcy(104) then
 			W = 4
 			H = 4
 			initX = 94
@@ -224,7 +257,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= 104 and posx <= 144 and posy >= 120 and posy <= 144 then
+		elseif posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(120) and posy <= calcy(144) then
 			W = 6
 			H = 4
 			initX = 64
@@ -234,7 +267,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= 176 and posx <= 216 and posy >= 80 and posy <= 104 then
+		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(80) and posy <= calcy(104) then
 			W = 6
 			H = 6
 			initX = 64
@@ -244,7 +277,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= 176 and posx <= 216 and posy >= 120 and posy <= 144 then
+		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(120) and posy <= calcy(144) then
 			W = 8
 			H = 6
 			initX = 32
@@ -260,7 +293,7 @@ function love.mousepressed(posx, posy, button)
 		for y = 0, H-1 do
 			for x = 0, W-1 do
 				piece = newPipe[y*W+x]
-				if posx >= piece.x and posx <= piece.x + 32 and posy >= piece.y and posy <= piece.y + 32 then
+				if posx >= calcx(piece.x) and posx <= calcx(piece.x + 32) and posy >= calcy(piece.y) and posy <= calcy(piece.y + 32) then
 					if piece.value ~= 'F' and piece.value ~= 0 then
 						if piece.value == 1 then
 							newPipe[y*W+x].value = 2
@@ -417,4 +450,16 @@ function saveScore()
 	scores[W..'x'..H] = newScores
 	table.save(scores, 'scores2')
 	gameState = 4
+end
+
+function love.resize(width, height)
+	tx, ty, fsv = CScreen.update(width, height)
+end
+
+function calcx(x)
+	return (x*fsv)+tx
+end
+
+function calcy(y)
+	return (y*fsv)+ty
 end
