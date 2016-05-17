@@ -112,7 +112,8 @@ function love.update(dt)
 		TimerCount(dt)
 	end
 	-- the game window is minimize
-	if not love.window.isVisible() then
+	if not love.window.isVisible() and gameState == 1then
+		prevState = 1
 		gameState = 5
 	end
 end
