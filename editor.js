@@ -8,16 +8,6 @@ var W = 8; // Width
 var H = 6; // Heigth
 
 var aPlantilla = new Array(W*H); // Array con la plantilla del puzzle
-var tileNames = new Array ("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"); // Nombres de los tiles
-
-// Preload the images on the browser cache
-
-var imArray = new Array(16); // Images array
-
-for ( x = 0 ; x < 16 ; x++ ) {
-	imArray[x] = new Image(24,24);
-	imArray[x].src = "img/" + tileNames[x] + ".png";
-}
 
 // Draw the puzzle grid
 function writePlantilla() {
@@ -26,7 +16,8 @@ function writePlantilla() {
 	for ( y = 0 ; y < H ; y++ ) {
 		table += "<tr>";
 		for ( x = 0 ; x < W ; x++ ) {
-			table += '<td><img id="c'+(casilla++)+'" src="img/0.png" onClick="setCasilla(this);return true;"></td>';
+			//table += '<td><img id="c'+(casilla++)+'" src="'+imArray[0].src+'" onClick="setCasilla(this);return true;" /></td>';
+			table += '<td><div id="c'+(casilla++)+'" onClick="setCasilla(this);return true;" class="p0"/></td>';
 		}
 		table += "</tr>";
     }
@@ -38,7 +29,7 @@ function initPlantilla() {
 	for ( x = 0 ; x < W*H ; x++ ) {
 		aPlantilla[x]=0;
     }
-	viewPlantilla();
+	calcEntropy();
 }
 
 // Convert the grid to string of hexadecimal values
@@ -63,7 +54,7 @@ function lPuzzle() {
     }
 	if ( cargados == W*H ) {
 		aPlantilla = aux;
-		viewPlantilla();
+		calcEntropy();
 		alert ( "load complete" );
     } else {
 		alert ( "load failure "+cargados );
@@ -89,7 +80,7 @@ function shiftUp() {
 	for ( x = 0 ; x < W ; x++ ) {
 		aPlantilla[x+(W*(H-1))] = aux[x];
     }
-	viewPlantilla();
+	calcEntropy();
 }
 
 // Whole move grid to down
@@ -104,7 +95,7 @@ function shiftDown() {
 	for ( x = 0 ; x < W ; x++ ) {
 		aPlantilla[x] = aux[x];
     }
-	viewPlantilla();
+	calcEntropy();
 }
 
 // Whole move grid to left
@@ -121,7 +112,7 @@ function shiftLeft() {
 	for ( x = 0 ; x < H ; x++ ){
 		aPlantilla[x*W+(W-1)] = aux[x];
 	}
-	viewPlantilla();
+	calcEntropy();
 }
 
 // Whole move template to right
@@ -138,34 +129,23 @@ function shiftRight() {
   for ( x = 0 ; x < H ; x++ ) {
 		aPlantilla[x*W] = aux[x];
     }
-	viewPlantilla();
+	calcEntropy();
 }
 
 // Update one box
 function setCasilla(casilla) {
 	aPlantilla[casilla.id.substring(1,casilla.id.length)]=currentTile;
-	viewPlantilla();
+	casilla.className = '';
+	casilla.classList.add('p'+currentTile);
+	calcEntropy();
 }
 
 // Select a tile
 function selectTile(tile) {
-	// Apagamos el tile actualmente seleccionado
-	oldtile=document.getElementById("t"+currentTile);
-	oldtile.style.borderColor="#9bbc0f";
-	// Encendemos el nuevo tile seleccionado
-	tile.style.borderColor="#0f380f";
+	document.querySelector("#t"+currentTile + ' > div').classList.remove('selected');
+	actualTile = document.getElementById(tile.id)
+	document.querySelector('#'+tile.id + ' > div').classList.add('selected');
 	currentTile=tile.id.substring(1,tile.id.length);
-}
-
-// Change the border color of the tiles
-function tileSelector() {
-	var xH = "";
-	for ( x = 0 ; x < 16 ; x++ ) {
-		xH = tileNames[x];
-		tile=document.getElementById("t"+xH);
-		tile.style.borderColor="#9bbc0f";
-		tile.border="3";
-    }
 }
 
 // Function for check in the four directions
@@ -175,12 +155,7 @@ function checkRight(tile) { return ( "2367ABEF".match(tile) ); }
 function checkLeft(tile) { return ( "89ABCDEF".match(tile) ); }
 
 // Update and redraw the grid
-function viewPlantilla() {
-	var casilla;
-	for ( x = 0 ; x < W*H ; x++ ) {
-		casilla = document.getElementById("c"+x);
-		casilla.src="./img/" + aPlantilla[x] + ".png";
-    }
+function calcEntropy() {
 	// Calculate the puzzle entropy
 	var entropy = 0;
 	var entropyLocal;
@@ -213,9 +188,9 @@ function gridSize(){
 	currentTile = 0;         // Indicamos que el tile seleccionado es el 0
 	writePlantilla()
 	initPlantilla();	// Inicializamos el array con la plantilla
-	tileSelector();		// Cambiamos el color del borde de todos los tiles seleccionables
-	selectTile(document.t0); // Seleccionamos graficamente el tile 0
-	setCasilla(document.c0); // inicializamos la cadena del puzzle
+	//tileSelector();		// Cambiamos el color del borde de todos los tiles seleccionables
+	selectTile(document.getElementById('t0')); // Seleccionamos graficamente el tile 0
+	setCasilla(document.getElementById('c0')); // inicializamos la cadena del puzzle
 	document.getElementById("final").value = valoresPlantilla()
 }
 

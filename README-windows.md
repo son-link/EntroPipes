@@ -1,5 +1,4 @@
 #EntroPipes
-![EntroPipes logo](img/logo.png)
 
 https://son-link.itch.io/entropipes
 
@@ -13,44 +12,18 @@ Under **GPL 3** license
 
 Based on original idea of [Z80St Software](https://sites.google.com/site/z80stsoftware)
 
+
 ## Instalation:
 
-### Linux:
-You need donwload **Löve** 0.9.0 or newer (lasted edition tested is 0.10.1) from official web and compile or, is avaliable, install from the repositories of your GNU/Linux distro. For example on **Archlinux**: `pacman -S love`
-
-Open a terminal and run `love path/to/EntroPipes.love` or `love path/to/EntroPipesFolder/`
-
-Other trick is create a custom executable:
-
-`cat /usr/bin/love EntroPipes.love > entropipes`
-
-### Windows:
-Simply download, unzip and double click on **EntroPipes.exe**
-
-[32 bits](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes-win32.zip)
-
-[64 bits](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes-win64.zip)
-
-### Android:
-
-Download the **apk** to your phone or tablet and install, or from your computer via adb.
-
-[Download APK for Android](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes.apk)
-
-Tested on Android >= 4.2.
+Simply unzip and double click on **EntroPipes.exe**
 
 ## How to play:
 
 Simply click the pipe to rotate.
 
-Press **Scape** on Linux/Windows or **Back button** on Android to show pause menu on game or resolve puzlle. On main menu exit directly. On anoher options return to main menu.
+Press **Scape** to show pause menu on game or resolve puzzle. On main menu exit directly. On anoher options return to main menu.
 
-The game will automatically pause when it loses focus (changed window or app) or is minimized.
-
-## Captures:
-
-![Main Screen](main_screen.png)
-![in game screen](ingame_screen.png)
+The game will automatically pause when it loses focus (changed window) or is minimized.
 
 
 ## Puzzle editor:

@@ -2,113 +2,73 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<title>EntroPipe Puzzle Editor</title>
 	<link rel="stylesheet" href="fontello-embedded.css" />
-	<style type="text/css">
-	 body {
-		text-align: center;
-		font-weight: bold;
-	}
-	#plantilla, #pipes {
-		background-color: #9bbc0f;
-		border-spacing: 0;
-		border-collapse: separate;
-		border: 1px solid #0f380f;
-	}
-	#plantilla td, #pipes td {border: 1px solid #0f380f;padding: 0}
-	#final {
-		background: #fff;
-		border: 0;
-		color: #000;
-	}
-	#content {
-		max-width: 322px;
-		margin: auto;
-		text-aling: center;
-		padding: auto;
-	}
-	table {
-		margin: auto;
-		margin: 5px;
-		text-align: center;
-	}
-	#controls td {border: 0}
-
-	div {display: inline-block;}
-	#result {width: auto; vertical-align: top;}
-	a[class*=icon] {
-		font-size: 150%;
-		color: #0f380f;
-		text-decoration: none;
-	}
-	</style>
+	<link rel="stylesheet" href="editor.css" />
 	<script type="text/javascript" src="editor.js"></script>
   </head>
   <body>
 	<div id="content">
 		<table id="pipes">
 			<tr>
-				<td align="center"><img id="t0" src="img/0_editor.png" onclick="selectTile(this);return true;" ><img/td>
-				<td align="center"><img id="t1" src="img/1.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t2" src="img/2.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t3" src="img/3.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t4" src="img/4.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t5" src="img/5.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t6" src="img/6.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t7" src="img/7.png" onclick="selectTile(this);return true;" ></td>
+				<td align="center"><div id="t0" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t1" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t2" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t3" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t4" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t5" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t6" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t7" onclick="selectTile(this);return true;"><div></div></div></td>
 			</tr>
 			<tr>
-				<td align="center"><img id="t8" src="img/8.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="t9" src="img/9.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tA" src="img/A.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tB" src="img/B.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tC" src="img/C.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tD" src="img/D.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tE" src="img/E.png" onclick="selectTile(this);return true;" ></td>
-				<td align="center"><img id="tF" src="img/F.png" onclick="selectTile(this);return true;" ></td>
-			</tr>
-			<tr>
-				<td colspan="5">
-					<table align="center" id="controls">
-						<tr>
-							<td align="center" colspan="3"><a href="#" onclick="shiftUp();return true;" class="icon-up" title="Move puzzle to up"></a></td>
-						</tr>
-						<tr>
-							<td align="center"><a href="#" onclick="shiftLeft();return true;" class="icon-left" title="Move puzzle to lett"></a></td>
-							<td align="center"><a href="#" onclick="if ( confirm('Clear puzzle?') ) { initPlantilla();return true;}" class="icon-trash" title="Clear puzzle"></a></td>
-							<td align="center"><a href="#" onclick="shiftRight();return true;" class="icon-right" title="Move puzzle to right"></a></td>
-						</tr>
-						<tr>
-							<td align="center" colspan="3"><a href="#" onclick="shiftDown();return true;" class="icon-down" title="Move puzzle to down"></a></td>
-						</tr>
-					</table>
-				</td>
-				<td colspan="3">
-					<label for="gridsize">Grid size</label>
-					<select id="gridsize" onchange="gridSize();">
-						<option>4x4</option>
-						<option>6x4</option>
-						<option>6x6</option>
-						<option selected>8x6</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="8"><span id="entropy">Puzzle Entropy: 0</span></td>
+				<td align="center"><div id="t8" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="t9" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tA" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tB" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tC" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tD" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tE" onclick="selectTile(this);return true;"><div></div></div></td>
+				<td align="center"><div id="tF" onclick="selectTile(this);return true;"><div></div></div></td>
 			</tr>
 		</table>
+		<div>
+			<table align="center" id="controls" style="float: left">
+				<tr>
+					<td align="center" colspan="3"><a href="#" onclick="shiftUp();return true;" class="icon-up" title="Move puzzle to up"></a></td>
+				</tr>
+				<tr>
+					<td align="center"><a href="#" onclick="shiftLeft();return true;" class="icon-left" title="Move puzzle to lett"></a></td>
+					<td align="center"><a href="#" onclick="if ( confirm('Clear puzzle?') ) { initPlantilla();return true;}" class="icon-trash" title="Clear puzzle"></a></td>
+					<td align="center"><a href="#" onclick="shiftRight();return true;" class="icon-right" title="Move puzzle to right"></a></td>
+				</tr>
+				<tr>
+					<td align="center" colspan="3"><a href="#" onclick="shiftDown();return true;" class="icon-down" title="Move puzzle to down"></a></td>
+				</tr>
+			</table>
+			<div style="float: left">
+				<label for="gridsize">Grid size</label>
+				<select id="gridsize" onchange="gridSize();">
+					<option>4x4</option>
+					<option>6x4</option>
+					<option>6x6</option>
+					<option selected>8x6</option>
+				</select>
+			</div>
+			<p id="entropy">Puzzle Entropy: 0</p>
+		</div>
 		<div><table id="plantilla"></table></div>
 	</div>
 	<div id="result">
 		<table>
 			<tr>
 				<td>
-					<b>Copy and send these lines:<br></b>
+					<b>Copy and send these lines:</b><br /><br />
 					<textarea id="final" cols="7" rows="6"></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<textarea id="loadArea" cols="7" rows="6"></textarea><br />
-					<input value="LOAD PUZZLE" onclick="if ( confirm('Load puzzle?') ) { lPuzzle();return true;}" type="button">
+					<br />
+					<textarea id="loadArea" cols="7" rows="6"></textarea><br /><br />
+					<button onclick="if ( confirm('Load puzzle?') ) { lPuzzle();return true;}">LOAD PUZZLE</button>
 				</td>
 			</tr>
 		</table>

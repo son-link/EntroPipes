@@ -12,7 +12,7 @@
 ## r3:
 * Update LovePotion to the last commits
 * Update PixelOperator8 font 
-* Minor changes on the code (need for run on the last LovePotion)
+* Minor changes on the code (need for run on LovePotion 1.10.x)
 * Added more puzzles and credits
 * Update README.md
 * Other minor changes
@@ -26,3 +26,16 @@
 * Remove **Nintendo 3DS** support.
 * Added **Cscreen** for keep aspect ratio on any screen or window resolution, necesary for Android and now you can change the windows size.
 * Clean clode and other minor changes
+
+## r5 (Beta 2):
+* New game grafics, logo and icons and remove others
+* Now automatic game pause if the window is minified or lost focus, or change app or back to desktop on Android
+* Remove some grafics
+* Now on the main screen have 3 options: Play, Top Score and Exit
+* Now show the all top scores when press the option on the main screen
+* Now on grid size selection Escape or Back button return to the main menu
+* Optimize the puzzle editor and some changes on CSS
+* Update README.md and screenshots
+* Added LÖVE and love-release credits on README.md
+* Added my script to automate the build for Windows and Android
+* Clean code and other changes

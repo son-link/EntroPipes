@@ -13,12 +13,11 @@ H = 6
 -- Inicial posotion of the pipe 
 initX = 32
 initY = 8
-
 limitX = 0
 
-gameState = 0 -- 0: Main screen, 1: playing, 2: the puzzle is resolve, 3: Game Over, 4 show Top score, 5 paused, 6 select grid size
+gameState = 0 -- 0: Main screen, 1: playing, 2: the puzzle is resolve, 3: Game Over, 4 show Top score, 5 paused, 6 select grid size, 7 show all top score
 ifWin = true -- For check if the player complete the puzzle
-
+local prevState -- for save last gameState
 
 puzzles = {} -- table whit the puzzles
 newPipe = {} -- This table contain the actual puzzle
@@ -50,22 +49,23 @@ local tx = 0
 local ty = 0
 local fsv = 1
 
-if not scores and (love.filesystem.exists and not love.filesystem.exists('scores')) then
+local font
+local scoreFont
+
+if not scores and not love.filesystem.exists('scores') then
 	table.save(defaultScores, 'scores')
 	scores = defaultScores
 end
-
- -- the background image
-local bg
 
 function love.load()
 	windowWidth = 320
     windowHeight = 240
 	love.window.setMode(windowWidth, windowHeight, {resizable=true, centered=true})
 	love.window.setTitle("EntroPipes")
-	love.window.setIcon(love.image.newImageData('icon_small.png'))
+	love.window.setIcon(love.image.newImageData('icon.png'))
+	love.graphics.setBackgroundColor(15,56,15)
 	CScreen.init(320,240, true)
-	CScreen.setColor(155,188,15,255)
+	CScreen.setColor(15,56,15,255)
 	
 	-- Filter for scale
 	love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -79,7 +79,8 @@ function love.load()
     
 	-- set font
 	font = love.graphics.newFont("PixelOperator8.ttf", 12)
-	love.graphics.setFont(font)	
+	love.graphics.setFont(font)
+	scoreFont = love.graphics.newFont("PixelOperator8.ttf", 8)
 
 	--preload images for the pipes
 	pipes = {
@@ -101,49 +102,50 @@ function love.load()
 		['pipe_F'] = love.graphics.newImage("img/F.png")
 	}
 	
-	-- Background image and dialogs
-	mainBG = love.graphics.newImage("img/main_screen.png")
-	gameBG = love.graphics.newImage("img/bg.png")
-	win_dialog = love.graphics.newImage("img/win_dialog.png")
-	top_score_bg = love.graphics.newImage("img/top_score_bg.png")
-	gameMode = love.graphics.newImage("img/select_grid_size.png")
-	pause_button = love.graphics.newImage("img/pause_button.png")
+	logo = love.graphics.newImage("img/logo.png")
 	
-	-- set default background
-	bg = mainBG
 end
 
 function love.update(dt)
 	if gameState == 1 then
-		bg = gameBG
+		--bg = gameBG
 		TimerCount(dt)
+	end
+	-- the game window is minimize
+	if not love.window.isVisible() then
+		gameState = 5
 	end
 end
 
 function love.draw()
 	CScreen.apply()
-	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.draw(bg, 0, 0)
-	if gameState == 1 then
-		bg = gameBG
-		CScreen.setColor(15,56,15,255)
-		-- print the pipes
-		for y = 0, H -1 do
-			for x = 0, W -1 do
-				piece = newPipe[y*W+x]
-				img = pipes['pipe_'..piece.value]
-				love.graphics.draw(img, piece.x, piece.y)
-
-			end
-		end
+	love.graphics.setColor(155, 188, 15, 255)
+	if gameState ==  0 then
+		love.graphics.draw(logo, 32, 16)
 		
+		love.graphics.setColor(48, 98, 48, 255)
+		love.graphics.rectangle('fill', 96, 86, 128, 20)
+		love.graphics.rectangle('fill', 96, 118, 128, 20)
+		love.graphics.rectangle('fill', 96, 150, 128, 20)
+		love.graphics.setColor(155, 188, 15, 255)
+		
+		love.graphics.printf("PLAY", 96, 91, 128, 'center')
+		love.graphics.printf("TOP SCORE", 96, 123, 128, 'center')
+		love.graphics.printf("EXIT", 96, 155, 128, 'center')
+		love.graphics.printf("(C) 2015-2016 Son Link", 0, 192, 320, 'center')
+	
+	elseif gameState == 1 then
+		print_pipes()
 		love.graphics.setColor(139, 172, 15, 255)
 		love.graphics.print("Time: "..math.ceil(timeLimit), 32, 216)
 		love.graphics.print("Score: "..totalScore, 136, 216)
 	elseif gameState == 2 then
 		-- Puzzle complete
-		love.graphics.draw(win_dialog, 80, 40)
+		print_pipes()
+		love.graphics.setColor(15, 56, 15, 255)
+		love.graphics.rectangle('fill', 88, 48, 144, 112)
 		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.rectangle('line', 88, 48, 144, 112)
 		love.graphics.printf("Complete!", 0, 56, 320, 'center')
 		love.graphics.printf("Time: "..math.ceil(timeLimit-30), 0, 80, 320, 'center')
 		love.graphics.printf("Score: "..score, 0, 96, 320, 'center')
@@ -151,8 +153,11 @@ function love.draw()
 		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 3 then
 		-- Time over
-		love.graphics.draw(win_dialog, 80, 40)
+		print_pipes()
+		love.graphics.setColor(15, 56, 15, 255)
+		love.graphics.rectangle('fill', 88, 48, 144, 112)
 		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.rectangle('line', 88, 48, 144, 112)
 		love.graphics.printf("GAME OVER!", 0, 56, 320, 'center')
 		love.graphics.printf("Score: "..totalScore, 0, 80, 320, 'center')
 		love.graphics.printf("Resolved: "..totalPuzzles, 0, 96, 320, 'center')
@@ -160,8 +165,8 @@ function love.draw()
 		love.graphics.printf("to continue.", 0, 144, 320, 'center')
 	elseif gameState == 4 then
 		-- Show the top 5 scores
-		love.graphics.draw(top_score_bg, 80, 32)
 		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.rectangle('line', 88, 40, 144, 128)
 		love.graphics.printf("Top score", 0, 48, 320, 'center')
 		posY = 64
 		scores2 = scores[W..'x'..H]
@@ -179,19 +184,52 @@ function love.draw()
 		love.graphics.printf("to continue.", 0, 152, 320, 'center')
 	elseif gameState == 5 then
 		-- Game paused
-		love.graphics.draw(win_dialog, 80, 40)
+		love.graphics.setColor(15, 56, 15, 255)
+		love.graphics.rectangle('fill', 88, 48, 144, 112)
+		love.graphics.setColor(48, 98, 48, 255)
+		love.graphics.rectangle('fill', 104, 80, 112, 24)
+		love.graphics.rectangle('fill', 104, 120, 112, 24)
 		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.rectangle('line', 88, 48, 144, 112)
+
 		love.graphics.printf("PAUSE", 0, 56, 320, 'center')
-		love.graphics.draw(pause_button, 104, 80)
 		love.graphics.printf("Continue", 0, 88, 320, 'center')
-		love.graphics.draw(pause_button, 104, 120)
 		love.graphics.printf("Exit", 0, 128, 320, 'center')
 	elseif gameState == 6 then
 		-- Select grid size
-		love.graphics.draw(gameMode, 80, 40)
-	else
-		CScreen.setColor(155,188,15,255)
-		bg = mainBG
+		love.graphics.draw(logo, 32, 16)
+		love.graphics.setColor(48, 98, 48, 255)
+		love.graphics.rectangle('fill', 104, 104, 40, 24)
+		love.graphics.rectangle('fill', 176, 104, 40, 24)
+		love.graphics.rectangle('fill', 104, 144, 40, 24)
+		love.graphics.rectangle('fill', 176, 144, 40, 24)
+		
+		love.graphics.setColor(155, 188, 15, 255)
+		love.graphics.printf("Select grid size", 0, 72, 320, 'center')
+		love.graphics.printf("4X4", 104, 111, 40, 'center')
+		love.graphics.printf("4X6", 176, 111, 40, 'center')
+		love.graphics.printf("6X6", 104, 151, 40, 'center')
+		love.graphics.printf("8X6", 176, 151, 40, 'center')
+	elseif gameState == 7 then
+		-- Show all top scores
+		love.graphics.setColor(139, 172, 15, 255)
+		love.graphics.printf("Top scores", 0, 48, 320, 'center')
+		scoresTexts = {'4x4', '6x4', '6x6', '8x6'}
+		local posX = 32
+		local posY = 80
+		for k, v in pairs(scoresTexts) do
+			love.graphics.print(v, posX, posY)
+			posY = posY + 16
+			love.graphics.setFont(scoreFont)
+			for _, s in pairs(scores[v]) do
+				love.graphics.print(s, posX, posY)
+				posY = posY + 14
+			end
+			posX = posX + 64
+			posY = 80
+			love.graphics.setFont(font)
+		end
+		love.graphics.setFont(font)
 	end
 	CScreen.cease()
 end
@@ -216,23 +254,32 @@ end
 
 function love.keypressed(key)
 	if key == "escape" then
-		if gameState == 1 then
+		if gameState == 1 or gameState == 2 then
+			prevState = gameState
 			gameState = 5
-		elseif gameState > 3 then
+		elseif gameState == 0 or gameState == 5 then
 			love.event.quit()
+		else
+			gameState = 0
 		end
 	end
 end
 
 function love.mousepressed(posx, posy, button)
 	if gameState == 0 then
-		gameState = 6
+		if posx >= calcx(96) and posx <= calcx(224) and posy >= calcy(88) and posy <= calcy(104) then
+			gameState = 6
+		elseif posx >= calcx(96) and posx <= calcx(224) and posy >= calcy(120) and posy <= calcy(136) then
+			gameState = 7
+		elseif posx >= calcx(96) and posx <= calcx(2224) and posy >= calcy(152) and posy <= calcy(168) then
+			love.event.quit()
+		end	
 	elseif gameState == 2 then
 		genPuzzle()
 	elseif gameState == 3 then
 		saveScore()
 	elseif gameState == 4 then
-		timeLimit = 180
+		timeLimit = 120
 		totalTime = 0
 		totalScore = 0
 		totalPuzzles = 0
@@ -240,14 +287,14 @@ function love.mousepressed(posx, posy, button)
 		
 	elseif gameState == 5 then
 		if posx >= calcx(104) and posx <= calcx(216) and posy >= calcy(80) and posy <= calcy(104) then
-			gameState = 1
+			gameState = prevState
 		elseif posx >= calcx(104) and posx <= calcx(216) and posy >= calcy(120) and posy <= calcy(144) then
 			love.event.quit()
 		end
 	elseif gameState == 6 then
 		puzzles = {}
 		numPuzzle = 1
-		if posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(80) and posy <= calcy(104) then
+		if posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(104) and posy <= calcy(128) then
 			W = 4
 			H = 4
 			initX = 94
@@ -257,7 +304,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(120) and posy <= calcy(144) then
+		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(104) and posy <= calcy(128) then
 			W = 6
 			H = 4
 			initX = 64
@@ -267,7 +314,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(80) and posy <= calcy(104) then
+		elseif posx >= calcx(104) and posx <= calcx(144) and posy >= calcy(144) and posy <= calcy(168) then
 			W = 6
 			H = 6
 			initX = 64
@@ -277,7 +324,7 @@ function love.mousepressed(posx, posy, button)
 			shuffle(puzzles)
 			gameState = 1
 			genPuzzle()
-		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(120) and posy <= calcy(144) then
+		elseif posx >= calcx(176) and posx <= calcx(216) and posy >= calcy(144) and posy <= calcy(168) then
 			W = 8
 			H = 6
 			initX = 32
@@ -448,7 +495,7 @@ function saveScore()
 		table.insert(newScores, oldScore[i])
 	end
 	scores[W..'x'..H] = newScores
-	table.save(scores, 'scores2')
+	table.save(scores, 'scores')
 	gameState = 4
 end
 
@@ -462,4 +509,20 @@ end
 
 function calcy(y)
 	return (y*fsv)+ty
+end
+
+function love.focus(f)
+	if not f and gameState == 1 then
+		gameState = 5
+	end
+end
+
+function print_pipes()
+	for y = 0, H -1 do
+		for x = 0, W -1 do
+			piece = newPipe[y*W+x]
+			img = pipes['pipe_'..piece.value]
+			love.graphics.draw(img, piece.x, piece.y)
+		end
+	end
 end
