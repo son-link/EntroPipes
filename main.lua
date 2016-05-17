@@ -513,6 +513,7 @@ end
 
 function love.focus(f)
 	if not f and gameState == 1 then
+		prevState = gameState
 		gameState = 5
 	end
 end
