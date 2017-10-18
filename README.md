@@ -8,7 +8,7 @@ https://son-link.itch.io/entropipes
 
 http://son-link.github.io
 
-EntroPipes is a puzzle type game programing on [LUA](http://lua.org) and the framework [LÖVE](http://love2D.org) for **Linux**, **Windows**, **Android** and Web Browsers.
+EntroPipes is a puzzle type game programing on [LUA](http://lua.org) and the framework [TIC-80](https://tic.computer/) for **Linux**, **Windows** and Web Browsers.
 
 Under **GPL 3** license
 
@@ -18,7 +18,9 @@ Based on original idea of [Z80St Software](https://sites.google.com/site/z80stso
 Simply download the correct archive for your system, extract and double click on the executable.
 
 ## Download:
-[Last releases](https://github.com/son-link/EntroPipes/releases)
+* [Last releases](https://github.com/son-link/EntroPipes/releases)
+* [Itch.io](https://son-link.itch.io/entropipes)
+* or [play online](https://tic.computer/play?cart=246)
 
 ## How to play:
 
