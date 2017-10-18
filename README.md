@@ -3,54 +3,40 @@
 
 https://son-link.itch.io/entropipes
 
-© 2015 - 2016 Alfonso Saavedra "Son Link"
+© 2015 - 2017 Alfonso Saavedra "Son Link"
 
 http://son-link.github.io
 
-EntroPipes is a puzzle type game programing on [LUA](http://lua.org) and the framework [LÖVE](http://love2D.org) for **Linux**, **Windows** and **Android**.
+EntroPipes is a puzzle type game programing on [LUA](http://lua.org) and the framework [LÖVE](http://love2D.org) for **Linux**, **Windows**, **Android** and Web Browsers.
 
 Under **GPL 3** license
 
 Based on original idea of [Z80St Software](https://sites.google.com/site/z80stsoftware)
 
-## Instalation:
+## Installation:
+Simply download the correct archive for your system, extract and double click on the executable.
 
-### Linux:
-You need donwload **Löve** 0.9.0 or newer (lasted edition tested is 0.10.1) from official web and compile or, is avaliable, install from the repositories of your GNU/Linux distro. For example on **Archlinux**: `pacman -S love`
-
-Open a terminal and run `love path/to/EntroPipes.love` or `love path/to/EntroPipesFolder/`
-
-Other trick is create a custom executable:
-
-`cat /usr/bin/love EntroPipes.love > entropipes`
-
-### Windows:
-Simply download, unzip and double click on **EntroPipes.exe**
-
-[32 bits](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes-win32.zip)
-
-[64 bits](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes-win64.zip)
-
-### Android:
-
-Download the **apk** to your phone or tablet and install, or from your computer via adb.
-
-[Download APK for Android](https://dl.dropboxusercontent.com/u/58286032/juegos/EntroPipes/EntroPipes.apk)
-
-Tested on Android >= 4.2.
+## Download:
+[Last releases](https://github.com/son-link/EntroPipes/releases)
 
 ## How to play:
 
-Simply click the pipe to rotate.
+In the main menu select option using **Up/Down** keys (default **Up/Down arrows** on your keyboard), and **Left/Right** (default **Left/Right arrows** on your keyboard for select puzzle size. In game is used for move the cursor.
+
+Press **A** button (**Z** in keyboard) in the main menu for . In game rotate the selected pipe.
+
+In game press **X** button (**A** in keyboard) for pause/play game
 
 Press **Scape** on Linux/Windows or **Back button** on Android to show pause menu on game or resolve puzlle. On main menu exit directly. On anoher options return to main menu.
 
 The game will automatically pause when it loses focus (changed window or app) or is minimized.
 
 ## Captures:
-
+### Main Screen:
 ![Main Screen](main_screen.png)
-![in game screen](ingame_screen.png)
+
+### In game video:
+![in game video](entropipes-record.gif)
 
 
 ## Puzzle editor:
@@ -60,19 +46,8 @@ The puzzle editor is write on HTML and Javascript and based on the original puzz
 
 ## Other credits:
 
-[LÖVE](http://love2d.org) is an **awesome** framework you can use to make 2D games in Lua. It's free, open-source, and works on Windows, Mac OS X, Linux, Android, and iOS.
+[TIC-80](https://github.com/nesbox/TIC-80) is a fantasy computer for making, playing and sharing tiny games
 
-[Android Port of LÖVE](https://bitbucket.org/MartinFelis/love-android-sdl2), the awesome 2D game engine LÖVE (http://love2d.org) Copyright (c) 2013-2014 Martin Felis martin@fysx.org
-
-LÖVE is under the GPL 3 license. Copyright (c) 2006-2016 LOVE Development Team
-
-**PixelOperator:**
-(C) 2009-2015 The Grandoplex Project.
-Made in Al Khobar, Saudi Arabia.
-This font by Jayvee Enaguas (HarvettFox96) is licensed under
-the SIL OFL 1.1 <http://scripts.sil.org/OFL>.
-[Download page](http://harvettfox96.deviantart.com/art/Pixel-Operator-1-5-0-568359556)
+TIC-80 is under the MIT license. (C) 2017 Nesbox
 
 Font icon for the editor make with [Fontello](http://fontello.com)
-
-Windows executable created with [Love-release](https://github.com/MisterDA/love-release). Under MIT license

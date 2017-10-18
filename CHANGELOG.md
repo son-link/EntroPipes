@@ -39,3 +39,13 @@
 * Added LÖVE and love-release credits on README.md
 * Added my script to automate the build for Windows and Android
 * Clean code and other changes
+
+## r6 (Beta 3):
+* Change framework. Now used **TIC-80**
+* New grafics.
+* A lot of code changes for adapte to TIC-80, performance, etc
+* Now only save the best record of the current puzzle size (due to limitations of framework)
+* The puzzles now is storage in a array inside game code. For the moment the files with puzzles list they keep to check that when adding new puzzles these are no longer in the game.
+* Remove unused files (old grafics, libs, etc)
+* Update README.md
+* Remove android APK. (Coming soon)
